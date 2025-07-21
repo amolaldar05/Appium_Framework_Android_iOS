@@ -1,0 +1,62 @@
+# Maven build outputs and wrapper
+target/
+**/target/
+!.mvn/wrapper/maven-wrapper.jar
+
+# IntelliJ IDEA
+.idea/
+!.idea/misc.xml
+!.idea/modules.xml
+*.iws
+*.iml
+*.ipr
+.idea/libraries/
+
+# Eclipse
+.classpath
+.project
+.settings/
+.factorypath
+.apt_generated
+.springBeans
+.sts4-cache
+
+# NetBeans
+nbproject/private/
+nbbuild/
+dist/
+nbdist/
+.nb-gradle/
+build/
+**/build/
+
+# VS Code
+.vscode/
+
+# OS Specific Files
+.DS_Store
+Thumbs.db
+
+# Java Build / Artifacts
+*.class
+*.jar
+*.war
+*.ear
+hs_err_pid*
+
+# Log Files
+*.log
+
+# Others recommended by gitignore.io for Java/Maven
+pom.xml.tag
+pom.xml.releaseBackup
+pom.xml.versionsBackup
+pom.xml.next
+release.properties
+dependency-reduced-pom.xml
+buildNumber.properties
+.mvn/timing.properties
+
+# Temporary files
+*~ 
+*.swp
