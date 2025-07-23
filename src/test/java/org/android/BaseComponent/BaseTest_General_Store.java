@@ -47,8 +47,8 @@ public class BaseTest_General_Store {
         // Desired capabilities using W3C UiAutomator2Options
         UiAutomator2Options options = new UiAutomator2Options()
                 .setDeviceName("Amol_Android_VD")                               // Target emulator/device
-                .setApp(System.getProperty("user.dir") + "/src/main/resources/General-Store.apk"); // App under test
-
+                .setApp(System.getProperty("user.dir") + "/src/main/resources/androidApps/General-Store.apk"); // App under test
+        options.setChromedriverExecutable(System.getProperty("user.dir")+"/src/main/resources/androidApps/chromedriver");
         // Initialize AndroidDriver with server URL and options
         driver = new AndroidDriver(service.getUrl(), options);
         // Set implicit wait for elements

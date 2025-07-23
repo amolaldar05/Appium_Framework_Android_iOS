@@ -47,7 +47,7 @@ public class BaseTest{
         // Desired capabilities using W3C UiAutomator2Options
         UiAutomator2Options options = new UiAutomator2Options()
                 .setDeviceName("Amol_Android_VD")                               // Target emulator/device
-                .setApp(System.getProperty("user.dir") + "/src/main/resources/ApiDemos-debug.apk"); // App under test
+                .setApp(System.getProperty("user.dir") + "/src/main/resources/androidApps/ApiDemos-debug.apk"); // App under test
 
         // Initialize AndroidDriver with server URL and options
         driver = new AndroidDriver(service.getUrl(), options);
