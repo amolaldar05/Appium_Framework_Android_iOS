@@ -23,7 +23,7 @@ SoftAssert softAssert= new SoftAssert();
 //        driver.findElement(AppiumBy.accessibilityId("3. Preference dependencies")).click();
 
 
-//        Activity activity = new Activity("io.appium.android.apis", "io.appium.android.apis.preference.PreferenceDependencies");
+    //        Activity activity = new Activity("io.appium.android.apis", "io.appium.android.apis.preference.PreferenceDependencies");
         // activity.start(); // Start the activity to ensure we are in the correct context but it is deprecated
         ((JavascriptExecutor)driver).executeScript("mobile:startActivity", ImmutableMap.of("intent","io.appium.android.apis/io.appium.android.apis.preference.PreferenceDependencies")); // Start the activity using Appium's mobile command
 
