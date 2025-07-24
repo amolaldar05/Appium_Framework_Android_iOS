@@ -5,9 +5,13 @@ import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebElement;
+import org.openqa.selenium.support.ui.WebDriverWait;
+
+import java.time.Duration;
 
 public class AndroidActions {
-    private final WebDriver driver;
+    protected WebDriver driver;
+
 
     // ✅ Constructor assigns driver
     public AndroidActions(WebDriver driver) {
@@ -118,25 +122,17 @@ public class AndroidActions {
                 )
         );
     }
+    // Scroll to a specific text using UIAutomator2
+
+
 }
 
 
 
 
 
-/**
- * Scroll to a specific text using UIAutomator2
- */
-//    public WebElement scrollUptoUsingUIAutomator2(String text) {
-//        System.out.println("👉 Scrolling to the text: " + text);
-//        WebElement targetElement = driver.findElement(
-//                AppiumBy.androidUIAutomator(
-//                        "new UiScrollable(new UiSelector().scrollable(true))" +
-//                                ".scrollIntoView(new UiSelector().text(\"" + text + "\"));"
-//                )
-//        );
-//        return targetElement; // Return the element so caller can interact
-//    }
+
+
 
 
 
