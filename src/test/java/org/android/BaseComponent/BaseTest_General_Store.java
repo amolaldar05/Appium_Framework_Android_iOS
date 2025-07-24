@@ -6,6 +6,7 @@ import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
+import org.android.PageObjects.FormPage;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -20,6 +21,7 @@ public class BaseTest_General_Store {
 
     // 🌐 AndroidDriver to interact with the mobile device
     public AndroidDriver driver;
+    public FormPage formPage;
 
     /**
      * 🚀 Setup method to initialize and start Appium service and AndroidDriver before tests run.
@@ -53,6 +55,7 @@ public class BaseTest_General_Store {
         driver = new AndroidDriver(service.getUrl(), options);
         // Set implicit wait for elements
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+         formPage = new FormPage(driver); // Initialize FormPage to interact with the form
     }
 
 
