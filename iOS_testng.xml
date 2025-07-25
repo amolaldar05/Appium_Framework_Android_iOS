@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Suite" verbose="2" preserve-order="true">
+    <test name="iOS Tests">
+        <classes>
+            <class name="org.iOS.iosGesturesDemo.IOSBasicsTests">
+                <methods>
+                    <include name="iOSBasicTest"/>
+                </methods>
+            </class>
+
+            <class name="org.iOS.iosGesturesDemo.LongPressGesture">
+                <methods>
+                    <include name="longPressTest"/>
+                </methods>
+            </class>
+
+            <class name="org.iOS.iosGesturesDemo.SliderGesture">
+                <methods>
+                    <include name="sliderTest"/>
+                </methods>
+            </class>
+
+            <class name="org.iOS.iosGesturesDemo.SwipeGesture">
+                <methods>
+                    <include name="swipeTest"/>
+                </methods>
+            </class>
+
+            <class name="org.iOS.iosGesturesDemo.scrollGesture">
+                <methods>
+                    <include name="scrollTest"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+</suite>

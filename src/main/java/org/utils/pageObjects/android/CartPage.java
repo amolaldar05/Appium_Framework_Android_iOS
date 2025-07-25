@@ -1,11 +1,11 @@
-package org.android.PageObjects;
+package org.utils.pageObjects.android;
 
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
-import org.android.utils.AndroidActions;
+import org.utils.actions.android.AndroidActions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -15,32 +15,32 @@ import java.util.List;
 public class CartPage extends AndroidActions {
     WebDriverWait wait;
     @AndroidFindBy(id = "com.androidsample.generalstore:id/toolbar_title")
-    public WebElement cartTitle;
+    private WebElement cartTitle;
 
     @AndroidFindBy(id = "com.androidsample.generalstore:id/productName")
-    public List<WebElement> productNamesInCart;
+    private List<WebElement> productNamesInCart;
 
     @AndroidFindBy(id = "com.androidsample.generalstore:id/productPrice")
-    public List<WebElement> productPricesInCart;
+    private List<WebElement> productPricesInCart;
 
     @AndroidFindBy(id = "com.androidsample.generalstore:id/totalAmountLbl")
-    public WebElement totalAmountLabel;
+    private WebElement totalAmountLabel;
 
     @AndroidFindBy(className = "android.widget.CheckBox")
-    public WebElement termsCheckbox;
+    private WebElement termsCheckbox;
 
     @AndroidFindBy(id = "com.androidsample.generalstore:id/btnProceed")
-    public WebElement proceedButton;
+    private WebElement proceedButton;
 
     @AndroidFindBy(xpath = "//android.widget.TextView[@resource-id='com.androidsample.generalstore:id/termsButton']")
-    public WebElement termsAndCondLink;
+    private WebElement termsAndCondLink;
 
 
     @AndroidFindBy(id = "com.androidsample.generalstore:id/alertTitle")
-    public WebElement alertTitle;
+    private WebElement alertTitle;
 
     @AndroidFindBy(id = "android:id/button1")
-    public WebElement closeTermsButton;
+    private WebElement closeTermsButton;
 
 
 
@@ -50,11 +50,8 @@ public class CartPage extends AndroidActions {
         wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    public void waitTillTitleDispalyed(){
-        // Wait for the cart title to be displayed
-        wait.until(webDriver -> cartTitle.isDisplayed());
-        wait.until(ExpectedConditions.attributeContains(cartTitle, "text", "Cart"));
-
+    public boolean waitTillTitleDisplayed() {
+        return waitTillTitleDispalyed(cartTitle, "Cart");
     }
 
     public void verifyProductInCart(String productName) {
@@ -109,6 +106,8 @@ public class CartPage extends AndroidActions {
     public void clickProceedButton() {
         // Click on the proceed button to continue
         proceedButton.click();
+
+        pressAndroidKey("back");
     }
 
     public int getProductCount() {

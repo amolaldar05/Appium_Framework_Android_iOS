@@ -1,4 +1,4 @@
-package org.android.BaseComponent;
+package org.utils.BaseComponents.android;
 
 
 import io.appium.java_client.android.AndroidDriver;
@@ -6,7 +6,6 @@ import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
-import org.android.PageObjects.FormPage;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -14,14 +13,13 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.time.Duration;
 
-public class BaseTest_General_Store {
+public class BaseTest_Chrome_Browser_Native_App {
 
     // 🛠️ Manages the lifecycle of the Appium server (start/stop)
     private AppiumDriverLocalService service;
 
     // 🌐 AndroidDriver to interact with the mobile device
     public AndroidDriver driver;
-    public FormPage formPage;
 
     /**
      * 🚀 Setup method to initialize and start Appium service and AndroidDriver before tests run.
@@ -48,14 +46,13 @@ public class BaseTest_General_Store {
     public void initializeDriver() {
         // Desired capabilities using W3C UiAutomator2Options
         UiAutomator2Options options = new UiAutomator2Options()
-                .setDeviceName("Amol_Android_VD")                               // Target emulator/device
-                .setApp(System.getProperty("user.dir") + "/src/main/resources/androidApps/General-Store.apk"); // App under test
-        options.setChromedriverExecutable(System.getProperty("user.dir")+"/src/main/resources/androidApps/chromedriver");
+                .setDeviceName("Amol_Android_VD")                              // Target emulator/device
+                .setChromedriverExecutable(System.getProperty("user.dir")+"/src/main/resources/androidApps/chromedriver");
+                 options.setCapability("browserName", "Chrome") ;// Set Chrome as the browser
         // Initialize AndroidDriver with server URL and options
         driver = new AndroidDriver(service.getUrl(), options);
         // Set implicit wait for elements
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-         formPage = new FormPage(driver); // Initialize FormPage to interact with the form
     }
 
 

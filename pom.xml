@@ -26,7 +26,6 @@
             <groupId>io.appium</groupId>
             <artifactId>java-client</artifactId>
             <version>${appium.client.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- Selenium (included transitively, but explicit for clarity) -->
@@ -41,7 +40,6 @@
             <groupId>org.testng</groupId>
             <artifactId>testng</artifactId>
             <version>${testng.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <!-- SLF4J Logging -->

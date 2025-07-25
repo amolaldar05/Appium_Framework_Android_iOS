@@ -1,4 +1,4 @@
-package org.iOS.BaseComponent;
+package org.utils.BaseComponents.iOS;
 
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.options.XCUITestOptions;
@@ -12,7 +12,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.time.Duration;
 
-public class BaseTest {
+public class BuiltInApps_BaseTest {
 
     // 🛠 Manages the lifecycle of the Appium server (start/stop)
     private AppiumDriverLocalService service;
@@ -57,7 +57,7 @@ public class BaseTest {
                 .setDeviceName("iPhone 16") // Simulator/device name
                 .setPlatformVersion("18.0") // iOS version
                 .setAutomationName("XCUITest") // iOS automation engine
-                .setApp(System.getProperty("user.dir")+"//src//main//resources//iOSApps//UIKitCatalog.app") // App path
+                //.setApp(System.getProperty("user.dir")+"//src//main//resources//iOSApps//UIKitCatalog.app") // App path
                 .setWdaLaunchTimeout(Duration.ofSeconds(20)); // Timeout for WebDriverAgent launch
     }
 

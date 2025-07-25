@@ -1,11 +1,8 @@
 package org.android.androidGestureDemos;
 
-import com.google.common.collect.ImmutableMap;
 import io.appium.java_client.AppiumBy;
-import io.appium.java_client.android.Activity;
-import org.android.BaseComponent.BaseTest;
+import org.utils.BaseComponents.android.BaseTest;
 import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;

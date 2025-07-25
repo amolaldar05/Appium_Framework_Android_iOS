@@ -1,4 +1,4 @@
-package org.android.BaseComponent;
+package org.utils.BaseComponents.android;
 
 
 import java.io.File;

@@ -1,8 +1,8 @@
 package org.iOS.iosGesturesDemo;
 
 import io.appium.java_client.AppiumBy;
-import org.ios.utils.IosActions;
-import org.iOS.BaseComponent.BaseTest;
+import org.utils.actions.iOS.IosActions;
+import org.utils.BaseComponents.iOS.BaseTest;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.BeforeClass;
