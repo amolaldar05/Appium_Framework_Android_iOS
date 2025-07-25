@@ -1,10 +1,11 @@
-package org.iOS.BaseComponent;
+package org.utils.BaseComponents.iOS;
 
 import io.appium.java_client.ios.IOSDriver;
 import io.appium.java_client.ios.options.XCUITestOptions;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
+import org.utils.pageObjects.iOS.HomePage;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -12,7 +13,7 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.time.Duration;
 
-public class BuiltInApps_BaseTest {
+public class BaseTest {
 
     // 🛠 Manages the lifecycle of the Appium server (start/stop)
     private AppiumDriverLocalService service;
@@ -22,6 +23,7 @@ public class BuiltInApps_BaseTest {
 
     // ⚙️ XCUITestOptions holds desired capabilities for iOS automation
     private XCUITestOptions options;
+    public HomePage homePage;
 
     // 🚀 Setup method to start Appium server and initialize the driver before tests
     @BeforeClass
@@ -49,6 +51,7 @@ public class BuiltInApps_BaseTest {
 
         // Set implicit wait for finding elements
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        homePage = new HomePage(driver);
     }
 
     // ⚙️ Configure iOS app and device settings
@@ -57,7 +60,7 @@ public class BuiltInApps_BaseTest {
                 .setDeviceName("iPhone 16") // Simulator/device name
                 .setPlatformVersion("18.0") // iOS version
                 .setAutomationName("XCUITest") // iOS automation engine
-                //.setApp(System.getProperty("user.dir")+"//src//main//resources//iOSApps//UIKitCatalog.app") // App path
+                .setApp(System.getProperty("user.dir")+"//src//main//resources//iOSApps//UIKitCatalog.app") // App path
                 .setWdaLaunchTimeout(Duration.ofSeconds(20)); // Timeout for WebDriverAgent launch
     }
 

@@ -1,13 +1,12 @@
-package org.android.PageObjects;
+package org.utils.pageObjects.android;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
-import org.android.utils.AndroidActions;
+import org.utils.actions.android.AndroidActions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
 
@@ -18,17 +17,17 @@ public class ProductListPage extends AndroidActions {
     WebDriverWait wait;
     WebDriver driver;
     @AndroidFindBy(id = "com.androidsample.generalstore:id/toolbar_title")
-    public WebElement productsTitle;
+    private WebElement productsTitle;
     @AndroidFindBy(id = "com.androidsample.generalstore:id/productName")
-    public List<WebElement> productNames;
+    private List<WebElement> productNames;
     @AndroidFindBy(id = "com.androidsample.generalstore:id/productPrice")
-    public List<WebElement> productPrices;
+    private List<WebElement> productPrices;
     @AndroidFindBy(id = "com.androidsample.generalstore:id/productAddCart")
-    public List<WebElement> addToCartButtons;
+    private List<WebElement> addToCartButtons;
     @AndroidFindBy (xpath = "//android.widget.Button[@text='ADD TO CART']")
-    WebElement addToCartButton;
+    private WebElement addToCartButton;
     @AndroidFindBy(id = "com.androidsample.generalstore:id/appbar_btn_cart")
-    public WebElement cartButton;
+    private WebElement cartButton;
 
     public ProductListPage(WebDriver driver) {
         super(driver);
@@ -37,11 +36,12 @@ public class ProductListPage extends AndroidActions {
         wait= new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    public void waitTillTitleDispalyed(){
-        // Wait for the cart title to be displayed
-        wait.until(ExpectedConditions.attributeContains(productsTitle, "text", "Products"));
-
+    public boolean waitTillTitleDisplayed() {
+        return waitTillTitleDispalyed(productsTitle, "Products");
     }
+
+
+
     public void scrollToProduct(String productName) {
         // Scroll to the specified product using UIAutomator2
         driver.findElement(

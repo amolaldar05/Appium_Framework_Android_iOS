@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE suite SYSTEM "http://testng.org/testng-1.0.dtd">
+<suite name="All Test Suite" verbose="2" preserve-order="true">
+
+    <test name="Android Tests">
+        <classes>
+            <!-- General Store -->
+            <class name="org.android.General_Store.CheckoutTest">
+                <parameter name="name" value="Sneha"/>
+                <parameter name="countryName" value="Argentina"/>
+                <parameter name="gender" value="female"/>
+
+                <methods>
+                    <include name="checkoutSingleProductTest"/>
+                    <include name="checkoutMultiProductTest"/>
+                </methods>
+            </class>
+
+            <class name="org.android.General_Store.Hybrid_App_Handle">
+                <methods>
+                    <include name="handleHybridAppTest"/>
+                </methods>
+            </class>
+
+            <class name="org.android.General_Store.LoginTests">
+                <methods>
+                    <include name="validFormTest"/>
+                    <include name="invalidFormTest"/>
+                </methods>
+            </class>
+
+            <!-- Gesture Demos -->
+            <class name="org.android.androidGestureDemos.ChromeBrowserNativeApp">
+                <methods>
+                    <include name="browserTest"/>
+                </methods>
+            </class>
+
+            <class name="org.android.androidGestureDemos.DragAndDropGestureDemo">
+                <methods>
+                    <include name="dragAndDropGestureTest"/>
+                </methods>
+            </class>
+
+            <class name="org.android.androidGestureDemos.LnadcapeClipboardAndKeyEvents">
+                <methods>
+                    <include name="wifiSettingsTest"/>
+                </methods>
+            </class>
+
+            <class name="org.android.androidGestureDemos.LongPressGestures">
+                <methods>
+                    <include name="longPressGestureTest"/>
+                </methods>
+            </class>
+
+            <class name="org.android.androidGestureDemos.ScrollGestures">
+                <methods>
+                    <include name="scrollGestureTest"/>
+                </methods>
+            </class>
+
+            <class name="org.android.androidGestureDemos.SwipeGestureDemo">
+                <methods>
+                    <include name="swipeGestureTest"/>
+                </methods>
+            </class>
+
+            <class name="org.android.androidGestureDemos.WifiSetting">
+                <methods>
+                    <include name="wifiSettingsTest"/>
+                </methods>
+            </class>
+        </classes>
+    </test>
+
+</suite>

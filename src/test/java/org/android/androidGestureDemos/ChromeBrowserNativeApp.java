@@ -1,6 +1,6 @@
 package org.android.androidGestureDemos;
 
-import org.android.BaseComponent.BaseTest_Chrome_Browser_Native_App;
+import org.utils.BaseComponents.android.BaseTest_Chrome_Browser_Native_App;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebElement;

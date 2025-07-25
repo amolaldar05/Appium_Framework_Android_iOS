@@ -1,10 +1,13 @@
-package org.android.PageObjects;
+package org.utils.pageObjects.android;
 
+import com.google.common.collect.ImmutableMap;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
-import org.android.utils.AndroidActions;
+import org.openqa.selenium.By;
+import org.openqa.selenium.JavascriptExecutor;
+import org.utils.actions.android.AndroidActions;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
 
@@ -17,6 +20,9 @@ public class FormPage extends AndroidActions {
     private WebElement countryDropdown;
     @AndroidFindBy(className = "android.widget.EditText")
     private WebElement nameField;
+
+    @AndroidFindBy(className = "android.widget.RadioButton")
+    private WebElement radioButton;
     @AndroidFindBy(id = "com.androidsample.generalstore:id/radioMale")
     private WebElement maleRadioButton;
     @AndroidFindBy(id = "com.androidsample.generalstore:id/radioFemale")
@@ -33,6 +39,18 @@ public class FormPage extends AndroidActions {
     }
 
 
+    public void setupActivity() {
+//        ((JavascriptExecutor) driver).executeScript("mobile:startActivity", ImmutableMap.of("intent", "com.androidsample.generalstore/com.androidsample.generalstore.SplashActivity"));
+        ((JavascriptExecutor) driver).executeScript(
+                "mobile:startActivity",
+                ImmutableMap.of(
+                        "package", "com.androidsample.generalstore",
+                        "activity", "com.androidsample.generalstore.SplashActivity"
+                )
+        );
+
+    }
+
     public void selectCountry(String countryName) {
         countryDropdown.click();
         WebElement country=scrollUptoUsingUIAutomator2(countryName);
@@ -43,12 +61,18 @@ public class FormPage extends AndroidActions {
     public void enterName(String name){
         nameField.sendKeys(name);
     }
-    public void selectGender(){
-       if (!maleRadioButton.isSelected()){
-    maleRadioButton.click();
-    }else{
-    femaleRadioButton.click();
-         }
+
+    public WebElement getGenderRadioButton(String gender) {
+        // Gender should be "Male" or "Female"
+        String xpath = "//android.widget.RadioButton[@text='" + gender + "']";
+        return driver.findElement(By.xpath(xpath));
+    }
+
+    public void selectGender(String gender) {
+        WebElement radioButton = getGenderRadioButton(gender);
+        if (!radioButton.getAttribute("checked").equals("true")) {
+            radioButton.click();
+        }
     }
 
     public Map<String, Object> clickShopBtn() {

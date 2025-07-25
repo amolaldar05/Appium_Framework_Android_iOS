@@ -1,20 +1,22 @@
-package org.android.utils;
+package org.utils.actions.android;
 
 import com.google.common.collect.ImmutableMap;
+import io.appium.java_client.android.AndroidDriver;
+import io.appium.java_client.android.nativekey.AndroidKey;
+import io.appium.java_client.android.nativekey.KeyEvent;
 import org.openqa.selenium.JavascriptExecutor;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.remote.RemoteWebElement;
-import org.openqa.selenium.support.ui.WebDriverWait;
+import org.utils.actions.AppiumUtils;
 
-import java.time.Duration;
-
-public class AndroidActions {
+public class AndroidActions extends AppiumUtils {
     protected WebDriver driver;
 
 
     // ✅ Constructor assigns driver
     public AndroidActions(WebDriver driver) {
+        super(driver);
         if (driver == null) {
             throw new IllegalArgumentException("❌ WebDriver cannot be null in AndroidActions");
         }
@@ -122,7 +124,24 @@ public class AndroidActions {
                 )
         );
     }
-    // Scroll to a specific text using UIAutomator2
+    // === Press Android Key using enum directly ===
+    public void pressAndroidKey(AndroidKey key) {
+        if (driver instanceof AndroidDriver) {
+            ((AndroidDriver) driver).pressKey(new KeyEvent(key));
+        } else {
+            throw new UnsupportedOperationException("pressAndroidKey is only supported for AndroidDriver");
+        }
+    }
+
+    // === Press Android Key using string (e.g., "enter", "back") ===
+    public void pressAndroidKey(String keyName) {
+        try {
+            AndroidKey key = AndroidKey.valueOf(keyName.toUpperCase());
+            pressAndroidKey(key);
+        } catch (IllegalArgumentException e) {
+            throw new IllegalArgumentException("Invalid Android key name: " + keyName, e);
+        }
+    }
 
 
 }

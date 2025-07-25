@@ -1,20 +1,15 @@
 package org.iOS.iosGesturesDemo;
 
 import io.appium.java_client.AppiumBy;
-import org.iOS.BaseComponent.BaseTest;
-import org.ios.utils.IosActions;
-import org.openqa.selenium.By;
-import org.openqa.selenium.JavascriptExecutor;
+import org.utils.BaseComponents.iOS.BaseTest;
+import org.utils.actions.iOS.IosActions;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.RemoteWebElement;
 import org.openqa.selenium.support.ui.WebDriverWait;
 import org.testng.annotations.BeforeClass;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import java.time.Duration;
-import java.util.HashMap;
-import java.util.Map;
 
 public class scrollGesture extends BaseTest {
     IosActions iosActions;
