@@ -1,21 +1,35 @@
 package org.utils.pageObjects.android;
 
+import io.appium.java_client.AppiumBy;
+import io.appium.java_client.AppiumDriver;
+import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.support.FindBy;
 import org.openqa.selenium.support.PageFactory;
+import org.slf4j.Logger;
 import org.utils.actions.android.AndroidActions;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.utils.helpers.LoggerUtil;
 
 import java.time.Duration;
+import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class CartPage extends AndroidActions {
     WebDriverWait wait;
+    WebDriver driver;
+    private static final Logger log = LoggerUtil.getLogger(CartPage.class);
     @AndroidFindBy(id = "com.androidsample.generalstore:id/toolbar_title")
     private WebElement cartTitle;
+
+    @AndroidFindBy(id = "com.androidsample.generalstore:id/productImage")
+    private List<WebElement> productImagesInCart;
 
     @AndroidFindBy(id = "com.androidsample.generalstore:id/productName")
     private List<WebElement> productNamesInCart;
@@ -35,88 +49,187 @@ public class CartPage extends AndroidActions {
     @AndroidFindBy(xpath = "//android.widget.TextView[@resource-id='com.androidsample.generalstore:id/termsButton']")
     private WebElement termsAndCondLink;
 
-
     @AndroidFindBy(id = "com.androidsample.generalstore:id/alertTitle")
     private WebElement alertTitle;
 
     @AndroidFindBy(id = "android:id/button1")
     private WebElement closeTermsButton;
 
+    @FindBy(css = "div.a4bIc")
+    private WebElement googleSearchButton;
 
 
-    public CartPage(WebDriver driver) {
+
+
+
+    public CartPage(AndroidDriver driver) {
         super(driver);
+        this.driver = driver;
         PageFactory.initElements(new AppiumFieldDecorator(driver, Duration.ofSeconds(10)), this);
-        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
+       wait= new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    public boolean waitTillTitleDisplayed() {
-        return waitTillTitleDispalyed(cartTitle, "Cart");
-    }
+    public double getTotalPriceByMatchingProductNames(List<String> expectedProductNames) {
+        double totalSum = 0.0;
+        Set<String> matchedProducts = new HashSet<>();
+        String lastPageSource = "";
 
-    public void verifyProductInCart(String productName) {
-        // Verify if the specified product is present in the cart
-        boolean isProductInCart = productNamesInCart.stream()
-                .anyMatch(ele -> ele.getText().equalsIgnoreCase(productName));
-        if (!isProductInCart) {
-            throw new AssertionError("Product " + productName + " not found in cart");
+        while (matchedProducts.size() < expectedProductNames.size()) {
+            List<WebElement> visibleNames = driver.findElements(
+                    AppiumBy.id("com.androidsample.generalstore:id/productName"));
+            List<WebElement> visiblePrices = driver.findElements(
+                    AppiumBy.id("com.androidsample.generalstore:id/productPrice"));
+
+            for (int i = 0; i < visibleNames.size(); i++) {
+                String name = visibleNames.get(i).getText().trim();
+                if (expectedProductNames.contains(name) && !matchedProducts.contains(name)) {
+                    String priceStr = visiblePrices.get(i).getText().replace("$", "").trim();
+                    try {
+                        double price = Double.parseDouble(priceStr);
+                        totalSum += price;
+                        matchedProducts.add(name);
+                        log.info("✔ Matched: {} → ${}", name, price);
+                    } catch (NumberFormatException e) {
+                        log.warn("⚠ Invalid price format for {}: {}", name, priceStr);
+                    }
+                }
+            }
+
+            if (matchedProducts.size() == expectedProductNames.size()) break;
+
+            String currentPageSource = driver.getPageSource();
+            if (currentPageSource.equals(lastPageSource)) {
+                log.info("🔚 No more scrollable content. Exiting scroll loop.");
+                break;
+            }
+
+            verticalScroll(0.7, 0.3);
+            waitForShortDelay();
+            lastPageSource = currentPageSource;
         }
-    }
 
-    public double getSumProductPrices(){
-        // Calculate the sum of all product prices in the cart
-        double totalSum = productPricesInCart.stream()
-                .mapToDouble(ele -> Double.parseDouble(ele.getText().replace("$", "")))
-                .sum();
-        System.out.println("Total Sum of Product Prices: $" + totalSum);
+        log.info("🧾 Final Total from Matched Products: ${}", totalSum);
         return totalSum;
     }
-    public void verifyProductPriceInCart(String productName, String expectedPrice) {
-        // Verify if the price of the specified product matches the expected price
-        for (int i = 0; i < productNamesInCart.size(); i++) {
-            if (productNamesInCart.get(i).getText().equalsIgnoreCase(productName)) {
-                String actualPrice = productPricesInCart.get(i).getText();
-                if (!actualPrice.equals(expectedPrice)) {
-                    throw new AssertionError("Price mismatch for " + productName + ": expected " + expectedPrice + ", but got " + actualPrice);
+
+
+    public void verifyProductInCart(String productName) {
+        waitTillTitleDisplayed(cartTitle, "Cart");
+
+        boolean found = false;
+        int maxScrolls = 3;
+        int scrolls = 0;
+
+        while (scrolls < maxScrolls) {
+            for (WebElement element : productNamesInCart) {
+                if (element.getText().equalsIgnoreCase(productName)) {
+                    log.info("🛒 Product '{}' found in cart", productName);
+                    return;
                 }
-                return;
             }
+            scrolls++;
+            verticalScroll(0.7, 0.3);
+            waitForShortDelay();
         }
-        throw new AssertionError("Product " + productName + " not found in cart");
+
+        log.error("❌ Product '{}' NOT found in cart after scrolling", productName);
+        throw new AssertionError("Product '" + productName + "' NOT found in cart after scrolling");
+    }
+
+
+
+
+    public double getSumProductPrices() {
+        Set<String> seenPrices = new HashSet<>();
+        double totalSum = 0.0;
+        int maxScrolls = 3;
+        int scrolls = 0;
+        int lastSeenCount = 0;
+
+        while (scrolls < maxScrolls) {
+            List<WebElement> visiblePrices = driver.findElements(
+                    AppiumBy.id("com.androidsample.generalstore:id/productPrice"));
+
+            for (WebElement priceElement : visiblePrices) {
+                String rawPrice = priceElement.getText().replace("$", "").trim();
+
+                if (!seenPrices.contains(rawPrice)) {
+                    seenPrices.add(rawPrice);
+                    try {
+                        totalSum += Double.parseDouble(rawPrice);
+                    } catch (NumberFormatException e) {
+                        log.warn("⚠ Skipping invalid price format: {}", rawPrice);
+                    }
+                }
+            }
+
+            if (seenPrices.size() == lastSeenCount) {
+                break;
+            }
+
+            lastSeenCount = seenPrices.size();
+            verticalScroll(0.7, 0.3);
+            waitForShortDelay();
+            scrolls++;
+        }
+
+        log.info("✅ Total collected prices: {}", seenPrices.size());
+        log.info("🧾 Total Sum: ${}", totalSum);
+        return totalSum;
     }
 
     public double getTotalAmount() {
-        // Get the total amount displayed in the cart
-       String totalAmount=totalAmountLabel.getText();
-       String totalPrice = totalAmount.replace("$", ""); // Remove dollar sign for comparison
-         double totalAmt = Double.parseDouble(totalPrice);
-         return totalAmt;
+        String totalAmount = totalAmountLabel.getText();
+        String totalPrice = totalAmount.replace("$", ""); // Remove dollar sign
+        double totalAmt = Double.parseDouble(totalPrice);
+        log.info("🔢 Total amount label text: {}", totalAmount);
+        log.info("✅ Parsed total amount: ${}", totalAmt);
+        return totalAmt;
     }
 
     public void clickTermsCheckbox() {
-        // Click on the terms and conditions button
         termsCheckbox.click();
+        log.info("☑ Terms and conditions checkbox clicked.");
     }
+
     public void acceptTermsAndConditions() {
         longPressGesture(termsAndCondLink);
-        // Wait for the alert to be displayed and then accept terms
+        log.info("📜 Long press on 'Terms and Conditions' link.");
         wait.until(ExpectedConditions.visibilityOf(alertTitle));
-        closeTermsButton.click(); // Close the alert
+        log.info("✅ Alert title visible: {}", alertTitle.getText());
+        closeTermsButton.click();
+        log.info("❌ Closed the Terms and Conditions alert.");
     }
+
     public void clickProceedButton() {
-        // Click on the proceed button to continue
         proceedButton.click();
-
+        log.info("➡ Proceed button clicked.");
         pressAndroidKey("back");
+        log.info("🔙 Android 'Back' key pressed after proceeding.");
     }
 
-    public int getProductCount() {
-        return productNamesInCart.size();
+    public int getProductCountInCart() {
+        waitTillTitleDisplayed(cartTitle, "Cart");
+        Set<String> uniqueProductNames = new HashSet<>();
+        int scrolls = 0;
+        int maxScrolls = 5;
+
+        log.info("🛒 Checking total unique product count in cart...");
+
+        while (scrolls < maxScrolls) {
+            for (WebElement productName : productNamesInCart) {
+                String name = productName.getText();
+                uniqueProductNames.add(name);
+                log.debug("📦 Found product in view: {}", name);
+            }
+            scrolls++;
+            verticalScroll(0.7, 0.3);
+            log.info("🔄 Scrolled down for more products. Scroll #{}", scrolls);
+            waitForShortDelay();
+        }
+
+        log.info("✅ Total unique products in cart: {}", uniqueProductNames.size());
+        return uniqueProductNames.size();
     }
 
-    public boolean isProductInCart(String product) {
-        // Check if a specific product is present in the cart
-        return productNamesInCart.stream()
-                .anyMatch(ele -> ele.getText().equalsIgnoreCase(product));
-    }
 }
