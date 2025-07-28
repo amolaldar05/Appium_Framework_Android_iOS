@@ -1,14 +1,20 @@
 package org.utils.BaseComponents.android;
 
-
+import com.google.common.collect.ImmutableMap;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
-import org.utils.pageObjects.android.FormPage;
+import org.openqa.selenium.JavascriptExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.testng.annotations.BeforeMethod;
+import org.utils.helpers.LoggerUtil;
+import org.utils.pageObjects.android.CartPage;
+import org.utils.pageObjects.android.FormPage;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -16,59 +22,58 @@ import java.time.Duration;
 
 public class BaseTest_General_Store {
 
-    // 🛠️ Manages the lifecycle of the Appium server (start/stop)
-    private AppiumDriverLocalService service;
+    private static final Logger log = LoggerUtil.getLogger(BaseTest_General_Store.class);
 
-    // 🌐 AndroidDriver to interact with the mobile device
-    public AndroidDriver driver;
-    public FormPage formPage;
+    protected AppiumDriverLocalService service;
+    protected AndroidDriver driver;
+    protected FormPage formPage;
 
-    /**
-     * 🚀 Setup method to initialize and start Appium service and AndroidDriver before tests run.
-     */
-    @BeforeClass
+    @BeforeClass(alwaysRun = true)
     public void setupAppiumServer() throws MalformedURLException {
-        // Build the Appium server with dynamic port and session override
+        log.info("🔧 Starting Appium server...");
         service = new AppiumServiceBuilder()
-                .usingAnyFreePort()                         // Use any available port to avoid conflicts
-                .withAppiumJS(new File("/usr/local/lib/node_modules/appium/build/lib/main.js")) // Path to Appium.js
-                .withArgument(GeneralServerFlag.SESSION_OVERRIDE)  // Force override any existing session
-                .withArgument(GeneralServerFlag.BASEPATH, "/wd/hub") // Use W3C-compatible base path
+                .usingAnyFreePort()
+                .withAppiumJS(new File("/usr/local/lib/node_modules/appium/build/lib/main.js"))
+                .withArgument(GeneralServerFlag.SESSION_OVERRIDE)
+                .withArgument(GeneralServerFlag.BASEPATH, "/wd/hub")
                 .build();
-       /* service = new AppiumServiceBuilder().withAppiumJS("/usr/local/lib/node_modules/appium/build/lib/main.js")
+              /* service = new AppiumServiceBuilder().withAppiumJS("/usr/local/lib/node_modules/appium/build/lib/main.js")
                        .withIPAddress("127.0.0.1")
                                 .usingPort(4723).build(); // Create Appium service with specified IP and port
 */
-       service.start();                                  // Start the Appium server process
-       System.out.println("Appium server started at: " + service.getUrl()); // Log the server URL
-        initializeDriver(); // Initialize the AndroidDriver with desired capabilities
 
+        service.start();
+        log.info("✅ Appium server started at: {}", service.getUrl());
+
+        initializeDriver();
     }
 
-    public void initializeDriver() {
-        // Desired capabilities using W3C UiAutomator2Options
+    private void initializeDriver() {
+        log.info("📲 Initializing Android driver...");
         UiAutomator2Options options = new UiAutomator2Options()
-                .setDeviceName("Amol_Android_VD")                               // Target emulator/device
-                .setApp(System.getProperty("user.dir") + "/src/main/resources/androidApps/General-Store.apk"); // App under test
-        options.setChromedriverExecutable(System.getProperty("user.dir")+"/src/main/resources/androidApps/chromedriver");
-        // Initialize AndroidDriver with server URL and options
+                .setDeviceName("Amol_Android_VD")
+                .setApp(System.getProperty("user.dir") + "/src/main/resources/androidApps/General-Store.apk");
+
+        options.setChromedriverExecutable(System.getProperty("user.dir") + "/src/main/resources/androidApps/chromedriver");
+
         driver = new AndroidDriver(service.getUrl(), options);
-        // Set implicit wait for elements
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
-         formPage = new FormPage(driver); // Initialize FormPage to interact with the form
+
+        formPage = new FormPage(driver);
+        log.info("✅ Android driver initialized with General Store app");
     }
 
 
-//     Tear down method to quit driver and stop server after all tests.
-
-    @AfterClass
+    @AfterClass(alwaysRun = true)
     public void tearDown() {
+        log.info("🧹 Cleaning up after tests...");
         if (driver != null) {
-            driver.quit(); // Close the mobile session cleanly
+            driver.quit();
+            log.info("🚗 Android driver quit.");
         }
         if (service != null && service.isRunning()) {
-            service.stop(); // Stop the underlying Appium server
+            service.stop();
+            log.info("🛑 Appium server stopped.");
         }
     }
 }
-

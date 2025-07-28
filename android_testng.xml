@@ -8,7 +8,7 @@
             <class name="org.android.General_Store.CheckoutTest">
                 <parameter name="name" value="Sneha"/>
                 <parameter name="countryName" value="Argentina"/>
-                <parameter name="gender" value="female"/>
+                <parameter name="gender" value="Female"/>
 
                 <methods>
                     <include name="checkoutSingleProductTest"/>

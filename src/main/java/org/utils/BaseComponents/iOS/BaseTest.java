@@ -5,6 +5,8 @@ import io.appium.java_client.ios.options.XCUITestOptions;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
+import org.slf4j.Logger;
+import org.utils.helpers.LoggerUtil;
 import org.utils.pageObjects.iOS.HomePage;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
@@ -15,65 +17,63 @@ import java.time.Duration;
 
 public class BaseTest {
 
-    // 🛠 Manages the lifecycle of the Appium server (start/stop)
     private AppiumDriverLocalService service;
-
-    // 🌐 iOSDriver to interact with iOS simulator/device
+    private static final Logger log = LoggerUtil.getLogger(BaseTest.class);
     public IOSDriver driver;
-
-    // ⚙️ XCUITestOptions holds desired capabilities for iOS automation
     private XCUITestOptions options;
     public HomePage homePage;
 
-    // 🚀 Setup method to start Appium server and initialize the driver before tests
     @BeforeClass
     public void setupAppiumServer() throws MalformedURLException {
-        // Build Appium server with dynamic port and base path for W3C compatibility
+        log.info("🛠️ Starting Appium server...");
+
         service = new AppiumServiceBuilder()
-                .usingAnyFreePort() // Use any available port to avoid conflicts
-                .withAppiumJS(new File("/usr/local/lib/node_modules/appium/build/lib/main.js")) // Path to Appium main.js
-                .withArgument(GeneralServerFlag.SESSION_OVERRIDE) // Override any existing session
-                .withArgument(GeneralServerFlag.BASEPATH, "/wd/hub") // Set base path
+                .usingAnyFreePort()
+                .withAppiumJS(new File("/usr/local/lib/node_modules/appium/build/lib/main.js"))
+                .withArgument(GeneralServerFlag.SESSION_OVERRIDE)
+                .withArgument(GeneralServerFlag.BASEPATH, "/wd/hub")
                 .build();
 
-        service.start(); // Start Appium server
-        System.out.println("✅ Appium server started at: " + service.getUrl());
+        service.start();
+        log.info("✅ Appium server started at: {}", service.getUrl());
 
-        initializeDriver(); // Initialize iOSDriver with desired capabilities
+        initializeDriver();
     }
 
-    // 📲 Initialize the iOSDriver with configured capabilities
     private void initializeDriver() {
-        setupAppAndDevice(); // Configure app and device capabilities
+        log.info("📲 Initializing iOS driver...");
+        setupAppAndDevice();
 
-        // Initialize iOSDriver with server URL and options
         driver = new IOSDriver(service.getUrl(), options);
-
-        // Set implicit wait for finding elements
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+        log.info("✅ iOS driver initialized successfully");
         homePage = new HomePage(driver);
     }
 
-    // ⚙️ Configure iOS app and device settings
     private void setupAppAndDevice() {
+        log.info("⚙️ Setting app and device capabilities...");
         options = new XCUITestOptions()
-                .setDeviceName("iPhone 16") // Simulator/device name
-                .setPlatformVersion("18.0") // iOS version
-                .setAutomationName("XCUITest") // iOS automation engine
-                .setApp(System.getProperty("user.dir")+"//src//main//resources//iOSApps//UIKitCatalog.app") // App path
-                .setWdaLaunchTimeout(Duration.ofSeconds(20)); // Timeout for WebDriverAgent launch
+                .setDeviceName("iPhone 16")
+                .setPlatformVersion("18.0")
+                .setAutomationName("XCUITest")
+                .setApp(System.getProperty("user.dir") + "/src/main/resources/iOSApps/UIKitCatalog.app")
+                .setWdaLaunchTimeout(Duration.ofSeconds(20));
+
+        log.info("📱 Capabilities set for device: iPhone 16, iOS 18.0");
     }
 
-    // 🧹 Tear down method to quit driver and stop Appium server after all tests
     @AfterClass
     public void tearDown() {
+        log.info("🧹 Tearing down test setup...");
+
         if (driver != null) {
-            driver.quit(); // Close the iOSDriver session
-            System.out.println("✅ iOSDriver session ended.");
+            driver.quit();
+            log.info("✅ iOSDriver session ended.");
         }
         if (service != null && service.isRunning()) {
-            service.stop(); // Stop Appium server
-            System.out.println("🛑 Appium server stopped.");
+            service.stop();
+            log.info("🛑 Appium server stopped.");
         }
     }
 }

@@ -1,117 +1,114 @@
 package org.utils.pageObjects.android;
 
 import io.appium.java_client.AppiumBy;
+import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.pagefactory.AndroidFindBy;
 import io.appium.java_client.pagefactory.AppiumFieldDecorator;
-import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.PageFactory;
-import org.utils.actions.android.AndroidActions;
-import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.utils.actions.android.AndroidActions;
+import org.utils.pageObjects.android.CartPage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 public class ProductListPage extends AndroidActions {
-    WebDriverWait wait;
-    WebDriver driver;
+    private static final Logger log = LoggerFactory.getLogger(ProductListPage.class);
+
+    private final WebDriverWait wait;
+    private final AndroidDriver driver;
+
     @AndroidFindBy(id = "com.androidsample.generalstore:id/toolbar_title")
     private WebElement productsTitle;
+
     @AndroidFindBy(id = "com.androidsample.generalstore:id/productName")
     private List<WebElement> productNames;
+
     @AndroidFindBy(id = "com.androidsample.generalstore:id/productPrice")
     private List<WebElement> productPrices;
+
     @AndroidFindBy(id = "com.androidsample.generalstore:id/productAddCart")
     private List<WebElement> addToCartButtons;
-    @AndroidFindBy (xpath = "//android.widget.Button[@text='ADD TO CART']")
+
+    @AndroidFindBy(xpath = "//android.widget.Button[@text='ADD TO CART']")
     private WebElement addToCartButton;
+
     @AndroidFindBy(id = "com.androidsample.generalstore:id/appbar_btn_cart")
     private WebElement cartButton;
 
-    public ProductListPage(WebDriver driver) {
+    public ProductListPage(AndroidDriver driver) {
         super(driver);
         this.driver = driver;
         PageFactory.initElements(new AppiumFieldDecorator(driver, Duration.ofSeconds(10)), this);
-        wait= new WebDriverWait(driver, Duration.ofSeconds(10));
+        wait = new WebDriverWait(driver, Duration.ofSeconds(10));
     }
 
-    public boolean waitTillTitleDisplayed() {
-        return waitTillTitleDispalyed(productsTitle, "Products");
-    }
-
-
-
-    public void scrollToProduct(String productName) {
-        // Scroll to the specified product using UIAutomator2
-        driver.findElement(
-                AppiumBy.androidUIAutomator(
-                        "new UiScrollable(new UiSelector().scrollable(true))" +
-                                ".scrollIntoView(new UiSelector().text(\"" + productName + "\"));"
-                )
-        );
-    }
     public void addSingleProductToCart(String productName) {
+        waitTillTitleDisplayed(productsTitle, "Products");
         productNames.stream()
                 .filter(ele -> ele.getText().equalsIgnoreCase(productName))
                 .findFirst()
                 .ifPresent(ele -> {
                     int index = productNames.indexOf(ele); // Get index of matched product
-                    System.out.println(productNames.get(index).getText() + ": " + productPrices.get(index).getText());
+                    String name = productNames.get(index).getText();
+                    String price = productPrices.get(index).getText();
+                    log.info("🛒 Adding product: {} | Price: {}", name, price);
                     addToCartButtons.get(index).click();
                 });
     }
 
-    public void addMultipleProductsToCart(List<String> productNamesList) throws InterruptedException {
-        // Add multiple products to cart based on the provided list
-        for (String productName : productNamesList) {
-            scrollToProduct(productName);// Scroll to the product if not visible
-            wait.until(ExpectedConditions.visibilityOfAllElements(productNames));
-            productNames.stream()
-                    .filter(ele -> ele.getText().equalsIgnoreCase(productName))
-                    .findFirst()
-                    .ifPresent(ele -> {
-                        int index = productNames.indexOf(ele); // Get index of matched product
-                        System.out.println(productNames.get(index).getText() + ": " + productPrices.get(index).getText());
-                        if(!addToCartButtons.get(index).isSelected() && addToCartButtons.size()>1) {
-                            addToCartButtons.get(index).click();
-                        }else {
-                            addToCartButton.click();
-                        }
-                    });
-        }
-    }
+    public void addMultipleProductsToCart(List<String> expectedProductNames) {
+        waitTillTitleDisplayed(productsTitle, "Products");
+        Set<String> addedProductNames = new HashSet<>();
+        String lastPageSource = "";
 
+        log.info("🛒 Attempting to add multiple products to cart: {}", expectedProductNames);
 
+        while (addedProductNames.size() < expectedProductNames.size()) {
+            log.debug("🔄 Scrolling through product list...");
+            for (int i = 0; i < productNames.size(); i++) {
+                String name = productNames.get(i).getText().trim();
 
-    public CartPage goToCartPage() {
-        cartButton.click();
-        return new CartPage(driver); // Return CartPage object for further actions
-    }
+                if (expectedProductNames.contains(name) && !addedProductNames.contains(name)) {
+                    log.info("🛍 Adding to cart: {}", name);
 
+                    if (i < addToCartButtons.size()) {
+                        addToCartButtons.get(i).click();
+                        addedProductNames.add(name);
+                        log.debug("✅ Added: {}", name);
+                    } else {
+                        log.warn("⚠ Couldn't find Add to Cart button for: {}", name);
+                    }
+                }
+            }
 
-
-    }
-
-
-
-
-
-
-/*for(int i=0;i<productNames.size();i++){
-            if(productNames.get(i).getText().equalsIgnoreCase(productName)){
-                System.out.println(productNames.get(i).getText()+": "+productPrices.get(i).getText());
-                addToCartButtons.get(i).click();
+            if (addedProductNames.size() == expectedProductNames.size()) {
+                log.info("🎯 All expected products added.");
                 break;
             }
-        }*/
 
-         /*IntStream.range(0, productNames.size())
-                .filter(i -> productNames.get(i).getText().equalsIgnoreCase(productName))
-                .findFirst()
-                .ifPresent(i -> {
-                    System.out.println(productNames.get(i).getText() + ": " + productPrices.get(i).getText());
-                    driver.findElements(By.id("com.androidsample.generalstore:id/productAddCart")).get(i).click();
-                });*/
+            String currentPageSource = driver.getPageSource();
+            if (currentPageSource.equals(lastPageSource)) {
+                log.warn("🔚 Reached end of product list. Stopping scroll.");
+                break;
+            }
 
+            verticalScroll(0.7, 0.3);
+            waitForShortDelay();
+            lastPageSource = currentPageSource;
+        }
 
+        log.info("✅ Products successfully added to cart: {}", addedProductNames);
+    }
+
+    public CartPage goToCartPage() {
+        log.info("🛒 Navigating to cart page...");
+        cartButton.click();
+        return new CartPage(driver);
+    }
+}

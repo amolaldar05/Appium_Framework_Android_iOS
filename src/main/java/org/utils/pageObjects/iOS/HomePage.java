@@ -2,6 +2,8 @@ package org.utils.pageObjects.iOS;
 
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.ios.IOSDriver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.utils.actions.iOS.IosActions;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
@@ -9,29 +11,28 @@ import org.openqa.selenium.WebElement;
 public class HomePage extends IosActions {
 
     private final IOSDriver driver;
+    private static final Logger log = LoggerFactory.getLogger(HomePage.class);
 
     // === Constructor ===
     public HomePage(IOSDriver driver) {
         super(driver);
         this.driver = driver;
+        log.info("🏠 HomePage initialized.");
     }
 
-    // === Private Locators (Static) ===
-//    private final By alertViews = AppiumBy.accessibilityId("Alert Views");
-
     // === Public Actions ===
-
     public AlertPage clickStaticTextByName(String name) {
         String locatorString = "type == 'XCUIElementTypeStaticText' AND name == '" + name + "'";
         By locator = AppiumBy.iOSNsPredicateString(locatorString);
+        log.debug("📍 Looking for static text element with name '{}'", name);
 
-        // If element is not visible, scroll to find it
         if (driver.findElements(locator).isEmpty()) {
-            iOSScrollAction((WebElement) locator,"down");  // will throw exception if not found
+            log.info("🔄 Element '{}' not immediately visible — attempting to scroll.", name);
+            iOSScrollAction((WebElement) locator, "down");  // May throw exception
         }
 
-        // Element is now present — click it
         driver.findElement(locator).click();
+        log.info("✅ Clicked element with static text '{}'", name);
 
         return new AlertPage(driver);
     }

@@ -1,11 +1,12 @@
 package org.utils.BaseComponents.android;
 
-
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
 
@@ -15,57 +16,68 @@ import java.time.Duration;
 
 public class BaseTest_Chrome_Browser_Native_App {
 
-    // 🛠️ Manages the lifecycle of the Appium server (start/stop)
     private AppiumDriverLocalService service;
-
-    // 🌐 AndroidDriver to interact with the mobile device
     public AndroidDriver driver;
+    private static final Logger log = LoggerFactory.getLogger(BaseTest_Chrome_Browser_Native_App.class);
 
-    /**
-     * 🚀 Setup method to initialize and start Appium service and AndroidDriver before tests run.
-     */
     @BeforeClass
     public void setupAppiumServer() throws MalformedURLException {
-        // Build the Appium server with dynamic port and session override
-        service = new AppiumServiceBuilder()
-                .usingAnyFreePort()                         // Use any available port to avoid conflicts
-                .withAppiumJS(new File("/usr/local/lib/node_modules/appium/build/lib/main.js")) // Path to Appium.js
-                .withArgument(GeneralServerFlag.SESSION_OVERRIDE)  // Force override any existing session
-                .withArgument(GeneralServerFlag.BASEPATH, "/wd/hub") // Use W3C-compatible base path
-                .build();
-       /* service = new AppiumServiceBuilder().withAppiumJS("/usr/local/lib/node_modules/appium/build/lib/main.js")
-                       .withIPAddress("127.0.0.1")
-                                .usingPort(4723).build(); // Create Appium service with specified IP and port
-*/
-       service.start();                                  // Start the Appium server process
-       System.out.println("Appium server started at: " + service.getUrl()); // Log the server URL
-        initializeDriver(); // Initialize the AndroidDriver with desired capabilities
+        log.info("🔧 Starting Appium server...");
+        try {
+            service = new AppiumServiceBuilder()
+                    .usingAnyFreePort()
+                    .withAppiumJS(new File("/usr/local/lib/node_modules/appium/build/lib/main.js"))
+                    .withArgument(GeneralServerFlag.SESSION_OVERRIDE)
+                    .withArgument(GeneralServerFlag.BASEPATH, "/wd/hub")
+                    .build();
 
+            service.start();
+            log.info("✅ Appium server started at: {}", service.getUrl());
+
+            initializeDriver();
+        } catch (Exception e) {
+            log.error("❌ Failed to start Appium server or initialize driver", e);
+            throw e;
+        }
     }
 
     public void initializeDriver() {
-        // Desired capabilities using W3C UiAutomator2Options
-        UiAutomator2Options options = new UiAutomator2Options()
-                .setDeviceName("Amol_Android_VD")                              // Target emulator/device
-                .setChromedriverExecutable(System.getProperty("user.dir")+"/src/main/resources/androidApps/chromedriver");
-                 options.setCapability("browserName", "Chrome") ;// Set Chrome as the browser
-        // Initialize AndroidDriver with server URL and options
-        driver = new AndroidDriver(service.getUrl(), options);
-        // Set implicit wait for elements
-        driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+        log.info("📱 Initializing Android driver with Chrome browser...");
+        try {
+            UiAutomator2Options options = new UiAutomator2Options()
+                    .setDeviceName("Amol_Android_VD")
+                    .setChromedriverExecutable(System.getProperty("user.dir") + "/src/main/resources/androidApps/chromedriver");
+            options.setCapability("browserName", "Chrome");
+
+            driver = new AndroidDriver(service.getUrl(), options);
+            driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+            log.info("✅ Android driver initialized successfully.");
+        } catch (Exception e) {
+            log.error("❌ Failed to initialize Android driver", e);
+            throw e;
+        }
     }
-
-
-//     Tear down method to quit driver and stop server after all tests.
 
     @AfterClass
     public void tearDown() {
-        if (driver != null) {
-            driver.quit(); // Close the mobile session cleanly
+        log.info("🛑 Tearing down test environment...");
+        try {
+            if (driver != null) {
+                driver.quit();
+                log.info("✅ Android driver quit successfully.");
+            }
+        } catch (Exception e) {
+            log.warn("⚠ Error while quitting Android driver", e);
         }
-        if (service != null && service.isRunning()) {
-            service.stop(); // Stop the underlying Appium server
+
+        try {
+            if (service != null && service.isRunning()) {
+                service.stop();
+                log.info("✅ Appium server stopped successfully.");
+            }
+        } catch (Exception e) {
+            log.warn("⚠ Error while stopping Appium server", e);
         }
     }
 }
-
