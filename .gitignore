@@ -62,3 +62,5 @@ buildNumber.properties
 *.swp
 screenshots/
 logs/
+.idea/misc.xml
+
