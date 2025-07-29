@@ -9,11 +9,12 @@ import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
 import org.openqa.selenium.WebElement;
-import org.openqa.selenium.remote.RemoteWebElement;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
+import org.utils.helpers.DriverManager;
+import org.utils.pageObjects.android.FormPage;
 
 import java.io.File;
 import java.net.MalformedURLException;
@@ -22,8 +23,9 @@ import java.time.Duration;
 public class BaseTest_CrossPlatform {
 
     private AppiumDriverLocalService service;
-    public AppiumDriver driver;
+    private AppiumDriver driver;
     private String platformName;
+    FormPage formPage;
 
     private static final Logger log = LoggerFactory.getLogger(BaseTest_CrossPlatform.class);
 
@@ -86,6 +88,11 @@ public class BaseTest_CrossPlatform {
             }
 
             driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
+
+            // Store driver in DriverManager
+            DriverManager.setDriver(driver);
+            formPage = new FormPage((AndroidDriver) driver);
+
         } catch (Exception e) {
             log.error("❌ Error initializing driver: {}", e.getMessage(), e);
             throw e;
@@ -94,8 +101,10 @@ public class BaseTest_CrossPlatform {
 
     @AfterClass(alwaysRun = true)
     public void tearDown() {
+        log.info("🧹 Cleaning up driver and Appium service...");
         if (driver != null) {
             driver.quit();
+            DriverManager.removeDriver();
             log.info("🛑 Driver session ended.");
         }
         if (service != null && service.isRunning()) {

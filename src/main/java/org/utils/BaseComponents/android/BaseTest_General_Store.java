@@ -1,19 +1,16 @@
 package org.utils.BaseComponents.android;
 
-import com.google.common.collect.ImmutableMap;
+import io.appium.java_client.AppiumDriver;
 import io.appium.java_client.android.AndroidDriver;
 import io.appium.java_client.android.options.UiAutomator2Options;
 import io.appium.java_client.service.local.AppiumDriverLocalService;
 import io.appium.java_client.service.local.AppiumServiceBuilder;
 import io.appium.java_client.service.local.flags.GeneralServerFlag;
-import org.openqa.selenium.JavascriptExecutor;
 import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import org.utils.helpers.DriverManager;
+import org.utils.helpers.LoggerUtil;
 import org.testng.annotations.AfterClass;
 import org.testng.annotations.BeforeClass;
-import org.testng.annotations.BeforeMethod;
-import org.utils.helpers.LoggerUtil;
-import org.utils.pageObjects.android.CartPage;
 import org.utils.pageObjects.android.FormPage;
 
 import java.io.File;
@@ -37,10 +34,6 @@ public class BaseTest_General_Store {
                 .withArgument(GeneralServerFlag.SESSION_OVERRIDE)
                 .withArgument(GeneralServerFlag.BASEPATH, "/wd/hub")
                 .build();
-              /* service = new AppiumServiceBuilder().withAppiumJS("/usr/local/lib/node_modules/appium/build/lib/main.js")
-                       .withIPAddress("127.0.0.1")
-                                .usingPort(4723).build(); // Create Appium service with specified IP and port
-*/
 
         service.start();
         log.info("✅ Appium server started at: {}", service.getUrl());
@@ -59,16 +52,19 @@ public class BaseTest_General_Store {
         driver = new AndroidDriver(service.getUrl(), options);
         driver.manage().timeouts().implicitlyWait(Duration.ofSeconds(10));
 
+        // Set driver in ThreadLocal DriverManager for parallel safety
+        DriverManager.setDriver(driver);
+
         formPage = new FormPage(driver);
         log.info("✅ Android driver initialized with General Store app");
     }
-
 
     @AfterClass(alwaysRun = true)
     public void tearDown() {
         log.info("🧹 Cleaning up after tests...");
         if (driver != null) {
             driver.quit();
+            DriverManager.removeDriver();  // Clean up ThreadLocal
             log.info("🚗 Android driver quit.");
         }
         if (service != null && service.isRunning()) {

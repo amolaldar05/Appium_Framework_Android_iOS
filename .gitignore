@@ -60,3 +60,5 @@ buildNumber.properties
 # Temporary files
 *~ 
 *.swp
+screenshots/
+logs/

@@ -4,9 +4,11 @@ import com.google.common.collect.ImmutableMap;
 import org.openqa.selenium.JavascriptExecutor;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
+import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import org.utils.BaseComponents.android.BaseTest_General_Store;
+import org.utils.BaseComponents.crossPlatforms.BaseTest_CrossPlatform;
 import org.utils.actions.enums.MobileKeyEvent;
 import org.utils.helpers.LoggerUtil;
 import org.utils.helpers.MobileKeyActionUtils;
@@ -16,6 +18,7 @@ import org.slf4j.Logger;
 
 import java.util.Map;
 
+@Listeners(org.utils.listeners.TestListener.class)
 public class LoginTests extends BaseTest_General_Store {
     private static final Logger log = LoggerUtil.getLogger(LoginTests.class);
 
@@ -28,7 +31,7 @@ public class LoginTests extends BaseTest_General_Store {
         formPage.setupActivity();
     }
 
-    @Test(enabled = false, dataProvider = "loginData", dataProviderClass = TestDataProvider.class)
+    @Test( dataProvider = "loginData", dataProviderClass = TestDataProvider.class)
     public void validFormTest(Map<String, String> data) {
         log.info("Running validFormTest with data: {}", data);
 
