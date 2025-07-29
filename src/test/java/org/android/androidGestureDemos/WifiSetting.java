@@ -1,7 +1,7 @@
 package org.android.androidGestureDemos;
 
 import io.appium.java_client.AppiumBy;
-import org.utils.BaseComponents.android.BaseTest;
+import org.BaseComponents.android.BaseTest;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.testng.annotations.Test;

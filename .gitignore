@@ -60,4 +60,7 @@ buildNumber.properties
 # Temporary files
 *~ 
 *.swp
+screenshots/
+logs/
 .idea/misc.xml
+

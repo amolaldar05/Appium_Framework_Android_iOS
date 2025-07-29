@@ -1,11 +1,11 @@
 package org.iOS.iosGesturesDemo;
 
-import org.utils.BaseComponents.iOS.BaseTest;
-import org.utils.pageObjects.iOS.AlertPage;
+import org.BaseComponents.crossPlatforms.BaseTest_CrossPlatform;
+import org.pageObjects.iOS.AlertPage;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
-public class IOSBasicsTests extends BaseTest {
+public class IOSBasicsTests extends BaseTest_CrossPlatform {
     SoftAssert softAssert = new SoftAssert();
 
     @Test
