@@ -1,25 +1,22 @@
 package org.android.General_Store;
 
-import com.google.common.collect.ImmutableMap;
-import org.openqa.selenium.JavascriptExecutor;
+import io.appium.java_client.android.AndroidDriver;
+import org.helpers.TestListener;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
 import org.testng.annotations.Listeners;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
-import org.utils.BaseComponents.android.BaseTest_General_Store;
-import org.utils.BaseComponents.crossPlatforms.BaseTest_CrossPlatform;
-import org.utils.actions.enums.MobileKeyEvent;
-import org.utils.helpers.LoggerUtil;
-import org.utils.helpers.MobileKeyActionUtils;
-import org.utils.helpers.TestDataProvider;
-import org.utils.pageObjects.android.ProductListPage;
+import org.BaseComponents.crossPlatforms.BaseTest_CrossPlatform;
+import org.helpers.LoggerUtil;
+import org.helpers.TestDataProvider;
+import org.pageObjects.android.ProductListPage;
 import org.slf4j.Logger;
 
 import java.util.Map;
 
-@Listeners(org.utils.listeners.TestListener.class)
-public class LoginTests extends BaseTest_General_Store {
+@Listeners(TestListener.class)
+public class LoginTests extends BaseTest_CrossPlatform {
     private static final Logger log = LoggerUtil.getLogger(LoginTests.class);
 
     SoftAssert softAssert = new SoftAssert();
@@ -40,16 +37,16 @@ public class LoginTests extends BaseTest_General_Store {
         String gender = data.get("gender");
 
         log.debug("Setting clipboard name: {}", name);
-        driver.setClipboardText(name);
+        ((AndroidDriver)driver).setClipboardText(name);
 
         log.info("Selecting country: {}", country);
         formPage.selectCountry(country);
 
         log.info("Entering name from clipboard");
-        formPage.enterName(driver.getClipboardText());
+        formPage.enterName(((AndroidDriver)driver).getClipboardText());
 
         log.debug("Hiding keyboard");
-        driver.hideKeyboard();
+        ((AndroidDriver)driver).hideKeyboard();
 
         log.info("Selecting gender: {}", gender);
         formPage.selectGender(gender);

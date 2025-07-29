@@ -1,20 +1,18 @@
 package org.android.General_Store;
 
-import com.google.common.collect.ImmutableMap;
-import org.openqa.selenium.JavascriptExecutor;
 import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Optional;
 import org.testng.annotations.Parameters;
-import org.utils.BaseComponents.android.BaseTest_General_Store;
-import org.utils.helpers.LoggerUtil;
-import org.utils.pageObjects.android.CartPage;
-import org.utils.pageObjects.android.ProductListPage;
+import org.BaseComponents.android.BaseTest_General_Store;
+import org.helpers.LoggerUtil;
+import org.pageObjects.android.CartPage;
+import org.pageObjects.android.ProductListPage;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 import java.util.List;
 import java.util.Map;
-import org.utils.actions.android.AndroidActions;
+import org.actions.android.AndroidActions;
 
 public class CheckoutTest extends BaseTest_General_Store {
 

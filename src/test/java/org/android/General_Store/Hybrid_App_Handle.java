@@ -3,7 +3,7 @@ package org.android.General_Store;
 import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
-import org.utils.BaseComponents.android.BaseTest_General_Store;
+import org.BaseComponents.android.BaseTest_General_Store;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
