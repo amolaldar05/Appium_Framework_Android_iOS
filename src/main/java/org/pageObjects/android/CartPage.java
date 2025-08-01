@@ -199,11 +199,12 @@ public class CartPage extends AndroidActions {
         log.info("❌ Closed the Terms and Conditions alert.");
     }
 
-    public void clickProceedButton() {
+    public WebViewPage clickProceedButton() {
         proceedButton.click();
         log.info("➡ Proceed button clicked.");
-        pressAndroidKey("back");
-        log.info("🔙 Android 'Back' key pressed after proceeding.");
+//        pressAndroidKey("back");
+//        log.info("🔙 Android 'Back' key pressed after proceeding.");
+        return new WebViewPage(driver);
     }
 
     public int getProductCountInCart() {

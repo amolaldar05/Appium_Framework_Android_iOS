@@ -3,6 +3,7 @@
 <suite name="All Test Suite" verbose="2" preserve-order="true">
 <listeners>
     <listener class-name="org.helpers.TestListener"/>
+    <listener class-name="org.helpers.RetryListener"/>
 </listeners>
     <parameter name="platformFromXML" value="android"/>
     <test name="Android Tests">

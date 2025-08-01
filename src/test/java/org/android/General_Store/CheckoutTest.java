@@ -1,5 +1,6 @@
 package org.android.General_Store;
 
+import org.helpers.RetryAnalyzer;
 import org.slf4j.Logger;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Optional;
@@ -28,7 +29,7 @@ public class CheckoutTest extends BaseTest_General_Store {
     }
 
     @Parameters({"name", "countryName", "gender"})
-    @Test
+    @Test(retryAnalyzer = RetryAnalyzer.class)
     public void checkoutSingleProductTest(
             @Optional("John") String name,
             @Optional("Argentina") String countryName,
@@ -112,6 +113,7 @@ public class CheckoutTest extends BaseTest_General_Store {
                 cartPage.clickTermsCheckbox();
                 cartPage.acceptTermsAndConditions();
                 cartPage.clickProceedButton();
+
                 softAssert.assertAll();
 
                 log.info(" Multi-product checkout test passed");
