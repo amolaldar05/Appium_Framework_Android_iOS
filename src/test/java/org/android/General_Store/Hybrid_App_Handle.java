@@ -24,6 +24,7 @@ SoftAssert softAssert = new SoftAssert();
 //
 //        ((JavascriptExecutor)driver).executeScript("mobile:startActivity", ImmutableMap.of("intent","com.androidsample.generalstore/com.androidsample.generalstore.AllProductsActivity")); // Start the activity using Appium's mobile command
         String productName = "Jordan 6 Rings";
+
         driver.setClipboardText("Amol Aldar");
         driver.findElement(By.className("android.widget.EditText")).sendKeys(driver.getClipboardText());
         driver.hideKeyboard(); // Hide the keyboard after entering text

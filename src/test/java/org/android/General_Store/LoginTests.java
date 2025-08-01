@@ -1,6 +1,7 @@
 package org.android.General_Store;
 
 import io.appium.java_client.android.AndroidDriver;
+import org.helpers.RetryAnalyzer;
 import org.helpers.TestListener;
 import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.DataProvider;
@@ -28,7 +29,7 @@ public class LoginTests extends BaseTest_CrossPlatform {
         formPage.setupActivity();
     }
 
-    @Test( dataProvider = "loginData", dataProviderClass = TestDataProvider.class)
+    @Test( dataProvider = "loginData", dataProviderClass = TestDataProvider.class,retryAnalyzer = RetryAnalyzer.class)
     public void validFormTest(Map<String, String> data) {
         log.info("Running validFormTest with data: {}", data);
 
