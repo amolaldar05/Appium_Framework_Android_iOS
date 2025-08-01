@@ -113,6 +113,7 @@ public class CheckoutTest extends BaseTest_General_Store {
                 cartPage.clickTermsCheckbox();
                 cartPage.acceptTermsAndConditions();
                 cartPage.clickProceedButton();
+
                 softAssert.assertAll();
 
                 log.info(" Multi-product checkout test passed");

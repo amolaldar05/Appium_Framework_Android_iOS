@@ -4,84 +4,102 @@ import io.appium.java_client.AppiumBy;
 import io.appium.java_client.android.nativekey.AndroidKey;
 import io.appium.java_client.android.nativekey.KeyEvent;
 import org.BaseComponents.android.BaseTest_General_Store;
+import org.helpers.LoggerUtil;
 import org.openqa.selenium.By;
 import org.openqa.selenium.Keys;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.support.ui.ExpectedConditions;
 import org.openqa.selenium.support.ui.WebDriverWait;
+import org.pageObjects.android.CartPage;
+import org.pageObjects.android.ProductListPage;
+import org.pageObjects.android.WebViewPage;
+import org.slf4j.Logger;
+import org.testng.annotations.BeforeMethod;
 import org.testng.annotations.Test;
 import org.testng.asserts.SoftAssert;
 
 import java.time.Duration;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 public class Hybrid_App_Handle extends BaseTest_General_Store {
-SoftAssert softAssert = new SoftAssert();
+
+    SoftAssert softAssert;
+    ProductListPage productListPage;
+    CartPage cartPage;
+
+    private static final Logger log = LoggerUtil.getLogger(Hybrid_App_Handle.class);
+
+    @BeforeMethod
+    public void setUp() {
+        softAssert = new SoftAssert();
+    }
+
     @Test
     public void handleHybridAppTest() throws InterruptedException {
-//        Activity activity = new Activity("com.androidsample.generalstore", "com.androidsample.generalstore.AllProductsActivity");
-//
-//        ((JavascriptExecutor)driver).executeScript("mobile:startActivity", ImmutableMap.of("intent","com.androidsample.generalstore/com.androidsample.generalstore.AllProductsActivity")); // Start the activity using Appium's mobile command
+
         String productName = "Jordan 6 Rings";
 
+        log.info("Starting Hybrid App Test for product: {}", productName);
+
+        formPage.selectCountry("Argentina");
+        log.info("Country selected: Argentina");
+
         driver.setClipboardText("Amol Aldar");
-        driver.findElement(By.className("android.widget.EditText")).sendKeys(driver.getClipboardText());
-        driver.hideKeyboard(); // Hide the keyboard after entering text
-        driver.findElement(By.id("com.androidsample.generalstore:id/btnLetsShop")).click();
-        //new UiSelector().text("Jordan 6 Rings")
+        String userName = driver.getClipboardText();
+        formPage.enterName(userName);
+        log.info("Entered user name from clipboard: {}", userName);
 
-        driver.findElement(
-                AppiumBy.androidUIAutomator(
-                        "new UiScrollable(new UiSelector().scrollable(true))" +
-                                ".scrollIntoView(new UiSelector().text(\"" + productName + "\"));"
-                )
-        );
+        formPage.selectGender("Male");
+        log.info("Gender selected: Male");
 
-        List<WebElement> productNames = driver.findElements(By.id("com.androidsample.generalstore:id/productName"));
-        List<WebElement> productPrices = driver.findElements(By.id("com.androidsample.generalstore:id/productPrice"));
-        List<WebElement> addToCartButtons = driver.findElements(By.id("com.androidsample.generalstore:id/productAddCart"));
+        driver.hideKeyboard();
 
+        Map<String, Object> result = formPage.clickShopBtn();
+        productListPage = (ProductListPage) result.get("page");
 
-        // Using Stream API to find the product and click the add to cart button
+        log.info("Navigating to product list...");
+        log.info("Scrolling and adding product to cart: {}", productName);
+        productListPage.scrollToProduct(productName);
+        productListPage.addSingleProductToCart(productName);
 
-        productNames.stream()
-                .filter(ele -> ele.getText().equalsIgnoreCase(productName))
-                .findFirst()
-                .ifPresent(ele -> {
-                    int index = productNames.indexOf(ele); // Get index of matched product
-                    System.out.println(productNames.get(index).getText() + ": " + productPrices.get(index).getText());
-                    addToCartButtons.get(index).click();
-                });
+        log.info("Navigating to cart page...");
+        cartPage = productListPage.goToCartPage();
 
-        driver.findElement(By.id("com.androidsample.generalstore:id/appbar_btn_cart")).click();
-        WebDriverWait wait = new WebDriverWait(driver, Duration.ofSeconds(10));
-        WebElement toolBar_title = driver.findElement(By.id("com.androidsample.generalstore:id/toolbar_title"));
-        // String toolBar_title_text=driver.findElement(By.id("com.androidsample.generalstore:id/toolbar_title")).getAttribute("text");
-        wait.until(ExpectedConditions.attributeContains(toolBar_title, "text", "Cart"));
+        log.info("Verifying product and calculating total price...");
+        cartPage.verifyProductInCart(productName);
 
-        String addedProductInCart = driver.findElement(By.id("com.androidsample.generalstore:id/productName")).getText();
-        softAssert.assertEquals(addedProductInCart, productName, "Product in cart does not match expected product");
-        String addedProductPrice = driver.findElement(By.id("com.androidsample.generalstore:id/productPrice")).getText();
-        addedProductPrice = addedProductPrice.replace("$", ""); // Remove dollar sign for comparison
-        double price = Double.parseDouble(addedProductPrice);
-        String totalPrice = driver.findElement(By.id("com.androidsample.generalstore:id/totalAmountLbl")).getText();
-        totalPrice = totalPrice.replace("$", ""); // Remove dollar sign for comparison
-        double total = Double.parseDouble(totalPrice);
-        softAssert.assertEquals(price, total, "Total price does not match the product price");
-        driver.findElement(By.className("android.widget.CheckBox")).click();
-        driver.findElement(By.id("com.androidsample.generalstore:id/btnProceed")).click();
-        Thread.sleep(5000);
-        Set<String> contexts=driver.getContextHandles();
-        contexts.forEach(context -> System.out.println("Available context: " + context));
-        driver.context("WEBVIEW_com.androidsample.generalstore");
-        //String currentContext = driver.getContext();
-        driver.findElement(By.name("q")).sendKeys("Appium");
-        driver.findElement(By.name("q")).sendKeys(Keys.ENTER);
+        double productPrice = cartPage.getSumProductPrices();
+        double totalAmount = cartPage.getTotalAmount();
+        log.debug("Sum of individual product prices: {}", productPrice);
+        log.debug("Displayed total amount: {}", totalAmount);
+
+        softAssert.assertEquals(productPrice, totalAmount, "Total price does not match sum of product prices");
+
+        log.info("Accepting terms and conditions...");
+        cartPage.clickTermsCheckbox();
+        cartPage.acceptTermsAndConditions();
+
+        log.info("Proceeding to WebView checkout...");
+        WebViewPage webViewpage = cartPage.clickProceedButton();
+
+        log.info("Switching to WEBVIEW context...");
+        webViewpage.handleWebContext();
+
+        log.info("Searching Google inside WebView...");
+        webViewpage.searchGoogle();
+
+        log.info("Switching back to NATIVE_APP context...");
+        webViewpage.handleNativeContext();
+
+        log.info("Navigating back to previous screen...");
         driver.pressKey(new KeyEvent(AndroidKey.BACK));
-        driver.context("NATIVE_APP"); // Switch back to native app context
         Thread.sleep(3000);
 
-        System.out.println("Handling hybrid app interactions...");
+        log.info("Asserting all verifications...");
+        softAssert.assertAll();
+
+        log.info("✅ Hybrid App Test completed successfully.");
     }
 }
